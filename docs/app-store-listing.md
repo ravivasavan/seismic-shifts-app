@@ -52,7 +52,7 @@ It also works perfectly well held in your hands, sat on a desk, or left running 
 
 PRIVACY
 
-The app accesses the microphone for live processing only. No audio leaves the device because no audio is ever stored. Full policy: https://ravivasavan.github.io/seismic/privacy.html
+The app accesses the microphone for live processing only. No audio leaves the device because no audio is ever stored. Full policy: https://ravivasavan.github.io/seismic-shifts/privacy.html
 
 REQUIREMENTS
 
@@ -73,9 +73,9 @@ budget.)
 
 ## URLs
 
-- **Marketing URL** (optional): `https://ravivasavan.github.io/seismic/`
-- **Support URL** (required): `https://ravivasavan.github.io/seismic/support.html`
-- **Privacy Policy URL** (required): `https://ravivasavan.github.io/seismic/privacy.html`
+- **Marketing URL** (optional): `https://ravivasavan.github.io/seismic-shifts/`
+- **Support URL** (required): `https://ravivasavan.github.io/seismic-shifts/support.html`
+- **Privacy Policy URL** (required): `https://ravivasavan.github.io/seismic-shifts/privacy.html`
 
 ## Category
 

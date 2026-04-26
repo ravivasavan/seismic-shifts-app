@@ -400,6 +400,7 @@
 				DEVELOPMENT_TEAM = QMSUBPG3D5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Seismic Shifts";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Seismic Shifts continuously listens to the gallery space to render acoustic presence as a seismograph trace.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -436,6 +437,7 @@
 				DEVELOPMENT_TEAM = QMSUBPG3D5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Seismic Shifts";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Seismic Shifts continuously listens to the gallery space to render acoustic presence as a seismograph trace.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
