@@ -1,0 +1,59 @@
+import SwiftUI
+
+/// Time tick markers along the bottom of the active trace. Tick spacing
+/// adapts to the current zoom window so 5–8 ticks remain visible.
+struct TimeAxisView: View {
+    let windowSeconds: TimeInterval
+    let endTime: Date
+
+    private var tickInterval: TimeInterval {
+        switch windowSeconds {
+        case 0..<120:    return 15      // ≤ 2 min  → every 15 s
+        case 120..<360:  return 30      // ≤ 6 min  → every 30 s
+        case 360..<900:  return 60      // ≤ 15 min → every 1 min
+        case 900..<1800: return 120     // ≤ 30 min → every 2 min
+        case 1800..<3600: return 300    // ≤ 60 min → every 5 min
+        default:         return 600     // > 60 min → every 10 min
+        }
+    }
+
+    private func label(for date: Date) -> String {
+        windowSeconds <= 360 ? DateFormatting.clockHMS(date: date) : DateFormatting.clockHM(date: date)
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            let startTime = endTime.addingTimeInterval(-windowSeconds)
+            let interval = tickInterval
+            let firstEpoch = ceil(startTime.timeIntervalSince1970 / interval) * interval
+
+            ZStack(alignment: .topLeading) {
+                Canvas { context, size in
+                    var t = firstEpoch
+                    while t <= endTime.timeIntervalSince1970 {
+                        let frac = (t - startTime.timeIntervalSince1970) / windowSeconds
+                        let x = size.width * CGFloat(frac)
+                        var path = Path()
+                        path.move(to: CGPoint(x: x, y: 0))
+                        path.addLine(to: CGPoint(x: x, y: 4))
+                        context.stroke(path, with: .color(Theme.inkFaint), lineWidth: 0.5)
+                        t += interval
+                    }
+                }
+
+                ForEach(
+                    Array(stride(from: firstEpoch, through: endTime.timeIntervalSince1970, by: interval)),
+                    id: \.self
+                ) { tickEpoch in
+                    let frac = (tickEpoch - startTime.timeIntervalSince1970) / windowSeconds
+                    let x = geo.size.width * CGFloat(frac)
+                    Text(label(for: Date(timeIntervalSince1970: tickEpoch)))
+                        .font(.system(size: 9, design: .monospaced))
+                        .foregroundColor(Theme.inkQuiet)
+                        .position(x: x, y: 14)
+                }
+            }
+        }
+        .frame(height: 22)
+    }
+}
