@@ -50,10 +50,14 @@ Four clean layers:
 - **App entry** (`SeismicApp.swift`) — wires the layers, locks
   landscape, hides system UI, disables the idle timer.
 
-Persistence (Phase 1.5, planned): each visual sample is also
-appended to `Documents/seismic-recordings/YYYY-MM-DD.csv`. Audio is
-never stored. Files survive launches and are excluded from iCloud
-backup.
+Persistence (Phase 1.5, planned): the app is **session-based**.
+Each launch starts the trace empty and creates a fresh CSV file
+in `Documents/seismic-recordings/` named for the session-start
+timestamp. One float per second is appended for the lifetime of
+the session; the file is sealed when the app terminates. Past
+sessions remain on disk for the artist, are excluded from iCloud
+backup, and are never surfaced inside the app. Audio itself is
+never stored.
 
 ## Build & run
 

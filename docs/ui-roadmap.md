@@ -68,27 +68,81 @@ when picking this up tomorrow.
 
 ---
 
+## Session model (clarified 2026-04-26)
+
+**The app is session-based.**
+
+- A *session* begins when the app launches and ends when it terminates
+  (force-quit, crash, device shutdown, or iOS reclaiming it for any
+  reason).
+- On launch, the trace **starts empty** — no carry-over of samples
+  from the previous session, no resume, no "where you left off." The
+  active trace fills from the right edge as the new session
+  accumulates samples.
+- The compressed history strip likewise starts empty on launch and
+  represents only the current session — *not* the iPad's full
+  history of running this app.
+- The recorder writes a **fresh CSV file per session**, not per
+  calendar day. Filenames encode the session-start timestamp so
+  multiple sessions in one day produce multiple files.
+- The CSV files persist across sessions in `Documents/seismic-recordings/`
+  — not visible to the viewer, but available to the artist later for
+  reflection, analysis, or derivative work. Past sessions are
+  *quietly* printed to local storage; never surfaced inside the app.
+
+This is a deliberate departure from the original spec's Phase 1.5,
+which appended to a single per-day file across crashes/relaunches.
+The new model trades data continuity (acceptable — gaps are accurate
+to what happened) for stronger ephemerality semantics: the visible
+work resets at every launch, so the viewer's experience of
+ephemerality is not just "the trace scrolls off the left," it is
+also "every session is a complete and bounded record on its own."
+
+For the gallery installation, this means: the iPad runs continuously
+in Guided Access for 14 days = one long session = one big CSV file +
+the history strip captures the full show. If the app crashes, the
+session breaks and the visible record resets — accepted because the
+artist's CSV archive still has the prior session preserved.
+
+---
+
 ## To-do
 
 Loosely ordered by what enables what. Pick whichever order makes
 sense to work through.
 
-### A. Persistence first (Phase 1.5 from the spec)
+### A. Persistence (session-based — overrides spec's Phase 1.5)
 
-The history strip can't exist without continuous, durable per-second
-samples that survive launches. Phase 1.5 builds the
-`TraceRecorder` that writes one CSV row per second to
-`Documents/seismic-recordings/YYYY-MM-DD.csv`.
+`TraceRecorder` writes one CSV row per second to a **per-session**
+file in `Documents/seismic-recordings/`. Filename encodes the
+session-start timestamp, e.g. `session-20260426T2254Z.csv`. A new
+file is created at every launch — the recorder never appends to a
+prior session's file.
 
-- [ ] Implement `TraceRecorder` per spec Phase 1.5.
+- [ ] Implement `TraceRecorder` with session-based filename
+      generation. ISO 8601 compact format with UTC suffix is
+      timezone-unambiguous and sorts naturally; pick on first launch
+      and hold for the lifetime of the session.
 - [ ] Hook it into `TraceBuffer.ingest()` so the recorder writes the
       same averaged float that drives the trace.
 - [ ] Verify CSV after 30 min on device — ~1,800 rows, parseable in
       Numbers, accessible via Files app.
 - [ ] Set `isExcludedFromBackup = true` on the recordings directory.
+- [ ] Confirm `synchronize()` cadence (spec recommended every 60
+      writes / 1 minute). Acceptable for session-based files since
+      losing the last few seconds of a crashed session is fine —
+      the file is sealed at session end anyway.
 - [ ] Decide: are `UIFileSharingEnabled` + `LSSupportsOpeningDocumentsInPlace`
       worth setting? Yes for ease of retrieval; no for zero
       discoverability if Guided Access is exited.
+
+**Departure from spec note.** The original spec's Phase 1.5 appended
+to a single per-day file across crashes ("a single day's file may
+have small gaps where the app was down"). The session model
+replaces that: a crash ends the session, the file closes, and the
+next launch starts a brand-new file. This is simpler to implement
+(no append-to-existing logic), more honest about what a "session"
+is, and gives the artist a clean, bounded record per run.
 
 ### B. Active trace — 15-minute window
 
@@ -179,8 +233,12 @@ Rendering strategy:
 - [ ] Maintain an in-memory **history buffer** sized to strip width
       in pixels (~2400). Each cell holds the aggregate of its time
       bucket — could be max, mean, or min/max envelope.
-- [ ] On launch, populate it by streaming the existing CSV files
-      (Phase 1.5) and bucketing into the strip cells.
+- [ ] On launch the strip is **empty** (session model — no carry-
+      over from prior sessions). It populates as the current
+      session accumulates samples. For the gallery installation
+      this is fine because the show is one long session; for casual
+      iPad use the strip remains nearly empty until enough time
+      passes.
 - [ ] On each new sample (1/s), update the current bucket's
       aggregate.
 - [ ] Draw the strip as a polyline (mean) or filled envelope (min
@@ -189,13 +247,13 @@ Rendering strategy:
       `((now - showStart) / showDuration) * stripWidth - viewportWidth`,
       width is `(15 min / showDuration) * stripWidth`. Stroke only,
       no fill, `~1.5 pt` orange (or reconsidered colour).
-- [ ] Decide: how does the app know when "show day 1" started?
-      Options:
-      - Hardcoded show open date in code.
-      - First-ever-launch timestamp persisted to UserDefaults.
-      - Date of the earliest CSV file in the recordings directory.
-      The spec mentions "PRESENCE — 14 DAYS" as a footer string, so
-      hardcoding the open date is consistent with that intent.
+- [ ] **Show start = session start.** With the session model, the
+      strip's left edge is the moment the app launched — not a
+      hardcoded show-opening date. The gallery installation runs
+      continuously, so this naturally matches "show day 1" as long
+      as the iPad doesn't reboot mid-show. (If the app does crash
+      and restart, the visible record resets; the prior session's
+      data is still in storage for the artist.)
 - [ ] Decide: viewer-visible record vs spec's ephemerality claim.
       *(Flagged in Reconciliation above.)*
 
@@ -222,12 +280,14 @@ The screen now has more than one zone. Sketch suggests:
 
 These should be answered before building, not during:
 
-1. **Ephemerality vs visible record.** The history strip puts the
-   show's data in front of the viewer. Is this the new direction,
-   or should the strip exist but be hidden (e.g. only visible when
-   a hidden gesture is performed by the artist)? The spec's strong
-   claim that "the viewer experiences ephemerality, the artist
-   retains the record" stops being true with the strip on screen.
+1. **Ephemerality vs visible record.** *Partially resolved by the
+   session-model clarification:* the visible record is bounded to
+   the current session and resets on every launch, so the
+   ephemerality claim still holds in a stronger sense — every
+   session is its own complete and bounded thing. The strip on
+   screen shows only what has happened since the app opened. Past
+   sessions are preserved on disk but never surfaced. Worth
+   confirming this resolves the tension to your satisfaction.
 2. **Scroll rate.** Spec leaned glacial (45 min – 7.5 h per screen).
    Sketch is 15 min. Lock in.
 3. **dB SPL calibration.** Default offset of +94 dB FS → SPL is
@@ -240,9 +300,9 @@ These should be answered before building, not during:
 5. **Strip viewport colour.** Orange in the sketch reads as
    warning/UI. Cream + black palette wants something quieter:
    thin black box, hairline, or a barely-warmer shade of the cream?
-6. **Show start time.** Hardcoded date, first-launch persistent
-   timestamp, or earliest-CSV-date? Hardcoded is most predictable
-   for a known gallery date.
+6. **Show start time.** *Resolved by the session-model clarification:
+   show start = current session start = app-launch time. The strip's
+   left edge anchors at launch.*
 
 ---
 
