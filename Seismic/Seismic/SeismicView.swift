@@ -60,13 +60,14 @@ struct SeismicView: View {
 
             VStack(alignment: .leading, spacing: 0) {
 
-                // 1. Trace block — the trace canvas now spans the
-                //    full inner width and the y-axis scale is
-                //    overlaid on top-left. The line therefore
-                //    extends *under* the dB labels at the left
-                //    edge instead of starting after them; the
-                //    rightmost tip and pen-tip dot stay inset 10pt
-                //    so they don't clip.
+                // 1. Trace block — bleeds to the left screen edge.
+                //    The active trace canvas spans from x=0 of the
+                //    screen to (screen-right − 40 pt). The y-axis
+                //    scale is overlaid on top, padded leading 40 pt
+                //    so its labels sit in the same 40 pt-from-screen
+                //    column as the timestamp / strip below. The
+                //    line itself runs *off* the left screen edge
+                //    rather than stopping at the 40 pt frame.
                 ZStack(alignment: .topLeading) {
                     TimelineView(.animation) { context in
                         ActiveTraceView(
@@ -81,13 +82,14 @@ struct SeismicView: View {
 
                     ScaleView()
                         .frame(width: Self.scaleColumnWidth)
+                        .padding(.leading, Theme.unit)
                         .allowsHitTesting(false)
                 }
                 .frame(maxHeight: .infinity)
 
-                // 2. Time axis — same full-width as the trace, so
-                //    its leftmost tick aligns with the trace's
-                //    leftmost x. Sits below the 0 dB baseline.
+                // 2. Time axis — same full-width-bleed as the trace
+                //    so the leftmost tick aligns with the trace's
+                //    leftmost x even when that x is the screen edge.
                 TimelineView(.animation) { context in
                     TimeAxisView(
                         windowSeconds: windowSeconds,
@@ -96,17 +98,22 @@ struct SeismicView: View {
                 }
                 .padding(.top, 6)
 
-                // 3. Live timestamp — left edge aligned to the y-axis
-                //    label column so its first character ("2" of
-                //    "20260427") lines up with the dB labels.
+                // 3. Live timestamp — inset 40 pt from screen left
+                //    so its first character ("2" of "20260427")
+                //    lines up with the dB labels.
                 TimestampView()
+                    .padding(.leading, Theme.unit)
                     .padding(.top, Theme.unit / 2)
                     .padding(.bottom, Theme.unit / 5)
 
-                // 4. Hairline
-                Rectangle().fill(Theme.hairline).frame(height: 0.5)
+                // 4. Hairline — sits inside the 40 pt frame on both
+                //    sides as a clean separator.
+                Rectangle()
+                    .fill(Theme.hairline)
+                    .frame(height: 0.5)
+                    .padding(.horizontal, Theme.unit)
 
-                // 5. History strip
+                // 5. History strip — also inset both sides.
                 TimelineView(.animation) { context in
                     HistoryStripView(
                         samples: session.samples,
@@ -118,9 +125,16 @@ struct SeismicView: View {
                     )
                 }
                 .frame(height: 96)
+                .padding(.horizontal, Theme.unit)
                 .padding(.top, Theme.unit / 4)
             }
-            .padding(Theme.unit)
+            // Outer padding: top/right/bottom only. Leading is left
+            // unpadded so the trace + time axis bleed to the screen
+            // edge while every other element sits in the 40 pt frame
+            // via its own .padding(.leading).
+            .padding(.top, Theme.unit)
+            .padding(.trailing, Theme.unit)
+            .padding(.bottom, Theme.unit)
         }
         .ignoresSafeArea()
         .contentShape(Rectangle())
