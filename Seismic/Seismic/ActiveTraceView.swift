@@ -18,7 +18,11 @@ struct ActiveTraceView: View {
     let endTime: Date
     let sessionStartedAt: Date
 
-    private static let penDotSize: CGFloat = 6
+    private static let penDotSize: CGFloat = 12
+    /// Inset from the right edge so the trace's "now" tip and the
+    /// pen-tip dot both stay fully visible — the dot is no longer
+    /// clipped against the right boundary of the canvas.
+    private static let rightInset: CGFloat = 10
 
     var body: some View {
         Canvas { context, size in
@@ -32,12 +36,14 @@ struct ActiveTraceView: View {
             let endIdx = min(samples.count, Int((secondsFromStart * rate).rounded(.up)) + 1)
             guard startIdx < endIdx else { return }
 
+            let usableWidth = max(1, size.width - Self.rightInset)
+
             var points: [CGPoint] = []
             points.reserveCapacity(endIdx - startIdx)
             for i in startIdx..<endIdx {
                 let secondsFromWindowStart = Double(i) / rate - windowStart
                 let frac = secondsFromWindowStart / windowSeconds
-                let x = size.width * CGFloat(frac)
+                let x = usableWidth * CGFloat(frac)
                 let normalized = max(0, min(1, samples[i] / 120))
                 let y = size.height * (1 - CGFloat(normalized))
                 points.append(CGPoint(x: x, y: y))
