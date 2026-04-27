@@ -17,6 +17,10 @@ struct ActiveTraceView: View {
     let windowSeconds: TimeInterval
     let endTime: Date
     let sessionStartedAt: Date
+    /// Where the dB grid lines begin (right edge of the y-axis
+    /// ticks, in canvas coordinates). Grid lines run from here to
+    /// the canvas right edge.
+    let gridStartX: CGFloat
 
     private static let penDotSize: CGFloat = 8
     /// Inset from the right edge so the trace's "now" tip and the
@@ -26,6 +30,17 @@ struct ActiveTraceView: View {
 
     var body: some View {
         Canvas { context, size in
+            // Major dB grid lines drawn first so they sit beneath the
+            // trace. Spans from the y-axis ticks' right edge to the
+            // trace canvas's right edge.
+            for v in stride(from: 0.0, through: 120.0, by: 20.0) {
+                let y = size.height * (1 - CGFloat(v / 120))
+                var grid = Path()
+                grid.move(to: CGPoint(x: gridStartX, y: y))
+                grid.addLine(to: CGPoint(x: size.width, y: y))
+                context.stroke(grid, with: .color(Theme.inkFaint), lineWidth: 0.5)
+            }
+
             guard samples.count > 1 else { return }
             let rate = SessionStore.sampleRate
 

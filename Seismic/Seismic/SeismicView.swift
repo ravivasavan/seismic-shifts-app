@@ -74,7 +74,8 @@ struct SeismicView: View {
                             samples: session.samples,
                             windowSeconds: windowSeconds,
                             endTime: context.date,
-                            sessionStartedAt: session.startedAt
+                            sessionStartedAt: session.startedAt,
+                            gridStartX: Theme.unit + Self.scaleColumnWidth
                         )
                         .gesture(pinchGesture())
                     }
@@ -106,14 +107,16 @@ struct SeismicView: View {
                     .padding(.top, Theme.unit / 2)
                     .padding(.bottom, Theme.unit / 5)
 
-                // 4. Hairline — sits inside the 40 pt frame on both
-                //    sides as a clean separator.
+                // 4. Hairline — leading inset 40 pt; trailing 40 pt
+                //    comes from the outer container, so no extra
+                //    horizontal padding is needed here (otherwise it
+                //    would double up to 80 pt on the right).
                 Rectangle()
                     .fill(Theme.hairline)
                     .frame(height: 0.5)
-                    .padding(.horizontal, Theme.unit)
+                    .padding(.leading, Theme.unit)
 
-                // 5. History strip — also inset both sides.
+                // 5. History strip — same: leading-only padding.
                 TimelineView(.animation) { context in
                     HistoryStripView(
                         samples: session.samples,
@@ -125,7 +128,7 @@ struct SeismicView: View {
                     )
                 }
                 .frame(height: 96)
-                .padding(.horizontal, Theme.unit)
+                .padding(.leading, Theme.unit)
                 .padding(.top, Theme.unit / 4)
             }
             // Outer padding: top/right/bottom only. Leading is left
