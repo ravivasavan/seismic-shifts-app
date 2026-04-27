@@ -18,7 +18,7 @@ struct ActiveTraceView: View {
     let endTime: Date
     let sessionStartedAt: Date
 
-    private static let penDotSize: CGFloat = 12
+    private static let penDotSize: CGFloat = 8
     /// Inset from the right edge so the trace's "now" tip and the
     /// pen-tip dot both stay fully visible — the dot is no longer
     /// clipped against the right boundary of the canvas.

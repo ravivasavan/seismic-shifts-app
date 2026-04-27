@@ -57,11 +57,14 @@ struct SeismicView: View {
 
             VStack(alignment: .leading, spacing: 0) {
 
-                // 1. Trace block
-                HStack(alignment: .top, spacing: Self.scaleToTraceGap) {
-                    ScaleView()
-                        .frame(width: Self.scaleColumnWidth)
-
+                // 1. Trace block — the trace canvas now spans the
+                //    full inner width and the y-axis scale is
+                //    overlaid on top-left. The line therefore
+                //    extends *under* the dB labels at the left
+                //    edge instead of starting after them; the
+                //    rightmost tip and pen-tip dot stay inset 10pt
+                //    so they don't clip.
+                ZStack(alignment: .topLeading) {
                     TimelineView(.animation) { context in
                         ActiveTraceView(
                             samples: session.samples,
@@ -72,21 +75,22 @@ struct SeismicView: View {
                         .gesture(pinchGesture())
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                    ScaleView()
+                        .frame(width: Self.scaleColumnWidth)
+                        .allowsHitTesting(false)
                 }
                 .frame(maxHeight: .infinity)
 
-                // 2. Time axis — sits below the trace, so all tick
-                //    labels are below the 0 dB baseline rather than
-                //    overlapping it. Indented via .padding rather
-                //    than a spacer column so it doesn't grab flex
-                //    height in the parent VStack.
+                // 2. Time axis — same full-width as the trace, so
+                //    its leftmost tick aligns with the trace's
+                //    leftmost x. Sits below the 0 dB baseline.
                 TimelineView(.animation) { context in
                     TimeAxisView(
                         windowSeconds: windowSeconds,
                         endTime: context.date
                     )
                 }
-                .padding(.leading, Self.scaleColumnWidth + Self.scaleToTraceGap)
                 .padding(.top, 6)
 
                 // 3. Live timestamp — left edge aligned to the y-axis
