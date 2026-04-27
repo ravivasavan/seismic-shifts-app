@@ -1,19 +1,23 @@
 import SwiftUI
 
-/// Time tick markers along the bottom of the active trace. Tick spacing
-/// adapts to the current zoom window so 5–8 ticks remain visible.
+/// Time tick markers along the bottom of the active trace. Tick
+/// spacing adapts to the current zoom window so a handful of ticks
+/// remain visible across short and long windows alike.
 struct TimeAxisView: View {
     let windowSeconds: TimeInterval
     let endTime: Date
 
     private var tickInterval: TimeInterval {
         switch windowSeconds {
-        case 0..<120:    return 15      // ≤ 2 min  → every 15 s
-        case 120..<360:  return 30      // ≤ 6 min  → every 30 s
-        case 360..<900:  return 60      // ≤ 15 min → every 1 min
-        case 900..<1800: return 120     // ≤ 30 min → every 2 min
-        case 1800..<3600: return 300    // ≤ 60 min → every 5 min
-        default:         return 600     // > 60 min → every 10 min
+        case 0..<10:        return 1     // ≤ 10 s  → every 1 s
+        case 10..<30:       return 3     // ≤ 30 s  → every 3 s
+        case 30..<120:      return 15    // ≤ 2 min → every 15 s
+        case 120..<360:     return 30    // ≤ 6 min → every 30 s
+        case 360..<900:     return 60    // ≤ 15 min → every 1 min
+        case 900..<1800:    return 120   // ≤ 30 min → every 2 min
+        case 1800..<3600:   return 300   // ≤ 60 min → every 5 min
+        case 3600..<14400:  return 600   // ≤ 4 h   → every 10 min
+        default:            return 1800  // > 4 h   → every 30 min
         }
     }
 

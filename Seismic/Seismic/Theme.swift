@@ -13,4 +13,8 @@ enum Theme {
     static let hairline = Color.black.opacity(0.30)
     static let viewport = Color(red: 0.86, green: 0.45, blue: 0.18, opacity: 0.95)
     static let viewportFill = Color(red: 0.86, green: 0.45, blue: 0.18, opacity: 0.10)
+
+    /// "Pen tip" colour for the live cursor at the right edge of the
+    /// active trace — quietly red, like a needle on seismograph paper.
+    static let pen = Color(red: 0.78, green: 0.18, blue: 0.12)
 }

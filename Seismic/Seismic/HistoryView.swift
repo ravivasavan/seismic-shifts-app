@@ -1,54 +1,20 @@
 import SwiftUI
 
-/// Hidden archive view triggered by triple-long-press. Lists past
-/// sessions grouped by day, each rendered as a horizontal strip.
-/// Triple-long-press anywhere dismisses back to the live trace.
+/// Hidden archive view triggered by triple-long-press. Simple list of
+/// past sessions, most recent first, with swipe-to-delete and a
+/// share button per row that exports the session's CSV file via the
+/// system share sheet (AirDrop, Files, Mail, Messages, ...).
 struct HistoryView: View {
     @Binding var isPresented: Bool
     @State private var sessions: [SessionFile] = []
-    @State private var dismissCount = 0
-    @State private var dismissResetTask: Task<Void, Never>?
-
-    private var grouped: [DayGroup] {
-        let cal = Calendar.current
-        var dict: [Date: [SessionFile]] = [:]
-        for s in sessions {
-            let day = cal.startOfDay(for: s.startedAt)
-            dict[day, default: []].append(s)
-        }
-        return dict.keys.sorted(by: >).map { date in
-            DayGroup(
-                id: date,
-                date: date,
-                sessions: dict[date]!.sorted { $0.startedAt > $1.startedAt }
-            )
-        }
-    }
 
     var body: some View {
-        ZStack {
-            Theme.paper.ignoresSafeArea()
-
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    Text("HISTORY")
-                        .font(.system(size: 12, design: .monospaced))
-                        .tracking(2.5)
-                        .foregroundColor(Theme.ink)
-                    Spacer()
-                    Text("\(sessions.count) SESSION\(sessions.count == 1 ? "" : "S")")
-                        .font(.system(size: 10, design: .monospaced))
-                        .tracking(1.5)
-                        .foregroundColor(Theme.inkQuiet)
-                }
-                .padding(.horizontal, 60)
-                .padding(.vertical, 24)
-
-                Rectangle().fill(Theme.hairline).frame(height: 0.5)
+        NavigationStack {
+            ZStack {
+                Theme.paper.ignoresSafeArea()
 
                 if sessions.isEmpty {
-                    Spacer()
-                    HStack {
+                    VStack {
                         Spacer()
                         Text("NO RECORDED SESSIONS")
                             .font(.system(size: 11, design: .monospaced))
@@ -56,83 +22,54 @@ struct HistoryView: View {
                             .foregroundColor(Theme.inkQuiet)
                         Spacer()
                     }
-                    Spacer()
                 } else {
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 0) {
-                            ForEach(grouped) { day in
-                                DayRow(day: day)
-                                Rectangle()
-                                    .fill(Theme.hairline)
-                                    .frame(height: 0.5)
-                                    .padding(.horizontal, 60)
-                            }
+                    List {
+                        ForEach(sessions) { session in
+                            SessionListRow(session: session)
+                                .listRowBackground(Theme.paper)
+                                .listRowSeparatorTint(Theme.hairline)
                         }
-                        .padding(.vertical, 8)
+                        .onDelete(perform: deleteRows)
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                }
+            }
+            .navigationTitle("HISTORY")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Theme.paper, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { isPresented = false }
+                        .foregroundColor(Theme.ink)
+                        .font(.system(size: 14, design: .monospaced))
                 }
             }
         }
-        .contentShape(Rectangle())
-        .gesture(dismissGesture())
         .onAppear {
             sessions = SessionLoader.loadAll()
         }
     }
 
-    private func dismissGesture() -> some Gesture {
-        LongPressGesture(minimumDuration: 0.6)
-            .onEnded { _ in
-                dismissCount += 1
-                dismissResetTask?.cancel()
-                if dismissCount >= 3 {
-                    dismissCount = 0
-                    isPresented = false
-                } else {
-                    dismissResetTask = Task {
-                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-                        if !Task.isCancelled {
-                            dismissCount = 0
-                        }
-                    }
-                }
-            }
-    }
-}
-
-struct DayGroup: Identifiable {
-    let id: Date
-    let date: Date
-    let sessions: [SessionFile]
-}
-
-struct DayRow: View {
-    let day: DayGroup
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(DateFormatting.dayHeader(date: day.date))
-                .font(.system(size: 11, design: .monospaced))
-                .tracking(2)
-                .foregroundColor(Theme.ink)
-                .padding(.top, 24)
-
-            VStack(alignment: .leading, spacing: 14) {
-                ForEach(day.sessions) { session in
-                    SessionRow(session: session)
-                }
-            }
-
-            Spacer().frame(height: 16)
+    private func deleteRows(at offsets: IndexSet) {
+        for idx in offsets {
+            try? FileManager.default.removeItem(at: sessions[idx].id)
         }
-        .padding(.horizontal, 60)
+        sessions.remove(atOffsets: offsets)
     }
 }
 
-struct SessionRow: View {
+private struct SessionListRow: View {
     let session: SessionFile
 
-    private var duration: String {
+    private var startedFormatted: String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyyMMdd  HH:mm:ss"
+        return f.string(from: session.startedAt)
+    }
+
+    private var durationFormatted: String {
         let total = session.durationSeconds
         let h = total / 3600
         let m = (total % 3600) / 60
@@ -143,51 +80,27 @@ struct SessionRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(DateFormatting.clockHMS(date: session.startedAt))
+        HStack(alignment: .center, spacing: 16) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(startedFormatted)
+                    .font(.system(size: 14, design: .monospaced))
+                    .foregroundColor(Theme.ink)
+                Text("\(durationFormatted)  ·  \(session.samples.count) PTS")
                     .font(.system(size: 10, design: .monospaced))
-                    .tracking(1.2)
-                    .foregroundColor(Theme.inkQuiet)
-                Text("·")
-                    .foregroundColor(Theme.inkQuiet)
-                Text(duration)
-                    .font(.system(size: 10, design: .monospaced))
-                    .tracking(1.2)
-                    .foregroundColor(Theme.inkQuiet)
-                Spacer()
-                Text("\(session.samples.count) PTS")
-                    .font(.system(size: 9, design: .monospaced))
                     .tracking(1)
-                    .foregroundColor(Theme.inkFaint)
+                    .foregroundColor(Theme.inkQuiet)
             }
-            Canvas { context, size in
-                let n = session.samples.count
-                guard n > 1 else { return }
-                let centerY = size.height / 2
-                let amp = size.height * 0.4
-                let columns = min(n, max(2, Int(size.width)))
 
-                var path = Path()
-                for col in 0..<columns {
-                    let s = (col * n) / columns
-                    let endRaw = ((col + 1) * n) / columns
-                    let e = max(s + 1, min(n, endRaw))
-                    let slice = session.samples[s..<e]
-                    let avg = slice.reduce(0, +) / Float(slice.count)
-                    let nval = max(0, min(1, avg / 120))
-                    let xFrac = columns > 1 ? Double(col) / Double(columns - 1) : 0.5
-                    let x = size.width * CGFloat(xFrac)
-                    let y = centerY - CGFloat(nval) * amp
-                    if col == 0 {
-                        path.move(to: CGPoint(x: x, y: y))
-                    } else {
-                        path.addLine(to: CGPoint(x: x, y: y))
-                    }
-                }
-                context.stroke(path, with: .color(Theme.ink), lineWidth: 0.7)
+            Spacer()
+
+            ShareLink(item: session.id) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 18, weight: .light))
+                    .foregroundColor(Theme.ink)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
-            .frame(height: 56)
         }
+        .padding(.vertical, 6)
     }
 }
