@@ -23,7 +23,8 @@ struct HistoryStripView: View {
             let n = samples.count
             if n > 1 {
                 let columns = min(n, max(2, Int(size.width)))
-                var path = Path()
+                var points: [CGPoint] = []
+                points.reserveCapacity(columns)
                 for col in 0..<columns {
                     let s = (col * n) / columns
                     let endRaw = ((col + 1) * n) / columns
@@ -35,14 +36,13 @@ struct HistoryStripView: View {
                     let xFrac = columns > 1 ? Double(col) / Double(columns - 1) : 0.5
                     let x = size.width * CGFloat(xFrac)
                     let y = centerY - CGFloat(normalized) * amp
-
-                    if col == 0 {
-                        path.move(to: CGPoint(x: x, y: y))
-                    } else {
-                        path.addLine(to: CGPoint(x: x, y: y))
-                    }
+                    points.append(CGPoint(x: x, y: y))
                 }
-                context.stroke(path, with: .color(Theme.inkQuiet), lineWidth: 0.7)
+                context.stroke(
+                    .smoothCurve(through: points),
+                    with: .color(Theme.inkQuiet),
+                    lineWidth: 0.7
+                )
             }
 
             // Viewport rectangle. Right edge anchors at "now"; width

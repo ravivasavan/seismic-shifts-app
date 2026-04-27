@@ -6,9 +6,12 @@ import SwiftUI
 /// at `sessionStartedAt`. Re-rendered at display refresh by the
 /// enclosing `TimelineView(.animation)`.
 ///
+/// The line between sample points is drawn as a Catmull-Rom curve so
+/// the trace reads as a continuous needle stroke rather than as
+/// connected line segments. The data itself is untouched.
+///
 /// A small red dot is drawn at the most recent sample so the cursor
-/// position reads as a pen tip — there's a visible point being
-/// inked, not just a line.
+/// position reads as a pen tip.
 struct ActiveTraceView: View {
     let samples: [Float]
     let windowSeconds: TimeInterval
@@ -29,33 +32,33 @@ struct ActiveTraceView: View {
             let endIdx = min(samples.count, Int((secondsFromStart * rate).rounded(.up)) + 1)
             guard startIdx < endIdx else { return }
 
-            var path = Path()
-            var lastPoint = CGPoint.zero
+            var points: [CGPoint] = []
+            points.reserveCapacity(endIdx - startIdx)
             for i in startIdx..<endIdx {
                 let secondsFromWindowStart = Double(i) / rate - windowStart
                 let frac = secondsFromWindowStart / windowSeconds
                 let x = size.width * CGFloat(frac)
                 let normalized = max(0, min(1, samples[i] / 120))
                 let y = size.height * (1 - CGFloat(normalized))
-                let pt = CGPoint(x: x, y: y)
-                if i == startIdx {
-                    path.move(to: pt)
-                } else {
-                    path.addLine(to: pt)
-                }
-                lastPoint = pt
+                points.append(CGPoint(x: x, y: y))
             }
-            context.stroke(path, with: .color(Theme.ink), lineWidth: 1.0)
 
-            // Pen-tip cursor: small red dot at the most recent sample.
-            let s = Self.penDotSize
-            let dotRect = CGRect(
-                x: lastPoint.x - s / 2,
-                y: lastPoint.y - s / 2,
-                width: s,
-                height: s
+            context.stroke(
+                .smoothCurve(through: points),
+                with: .color(Theme.ink),
+                lineWidth: 1.0
             )
-            context.fill(Path(ellipseIn: dotRect), with: .color(Theme.pen))
+
+            if let last = points.last {
+                let s = Self.penDotSize
+                let dotRect = CGRect(
+                    x: last.x - s / 2,
+                    y: last.y - s / 2,
+                    width: s,
+                    height: s
+                )
+                context.fill(Path(ellipseIn: dotRect), with: .color(Theme.pen))
+            }
         }
     }
 }

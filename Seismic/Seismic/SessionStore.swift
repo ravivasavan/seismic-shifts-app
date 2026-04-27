@@ -38,6 +38,25 @@ final class SessionStore: ObservableObject {
         // ambient room noise.
         smoothedDb = smoothedDb * 0.6 + value * 0.4
 
+        // If the app was suspended (multitasking, lock screen, ...)
+        // there will be missing samples for the suspended duration.
+        // Pad the visual array with the last known value so the
+        // x-axis stays aligned to wallclock time and the trace's
+        // right edge always matches "now." Disk accumulator is
+        // reset so the CSV reflects the gap accurately rather than
+        // re-recording held values.
+        let nowOffset = Date().timeIntervalSince(startedAt)
+        let expectedCount = Int((nowOffset * Self.sampleRate).rounded(.down))
+        if samples.count < expectedCount {
+            let cap = Int(86_400 * Self.sampleRate)  // 24 h sanity cap
+            let gap = min(expectedCount - samples.count, cap)
+            if gap > 0 {
+                let last = samples.last ?? smoothedDb
+                samples.append(contentsOf: Array(repeating: last, count: gap))
+                diskAccumulator.removeAll(keepingCapacity: true)
+            }
+        }
+
         samples.append(smoothedDb)
 
         diskAccumulator.append(smoothedDb)

@@ -17,8 +17,12 @@ import Combine
 ///
 /// - **Pinch** on the active trace: 5 s minimum window up to the
 ///   full session length. Default 15 s.
-/// - **Three consecutive long-presses** within ~2 s reveal the
-///   History view (an artist-only archive of past sessions).
+/// - **Triple-tap** anywhere on the screen reveals the History
+///   view (an artist-only archive of past sessions). Triple-tap
+///   over a chained long-press because tap-count gestures are
+///   strictly more reliable on iPad — long-press chains can drop
+///   when the gesture system arbitrates with system / pinch
+///   gestures.
 struct SeismicView: View {
     @StateObject private var session: SessionStore
     @StateObject private var audio: AudioMonitor
@@ -26,9 +30,6 @@ struct SeismicView: View {
     @State private var windowSeconds: TimeInterval = 15
     @State private var pinchBaseline: TimeInterval? = nil
     @State private var showHistory = false
-
-    @State private var longPressCount = 0
-    @State private var longPressResetTask: Task<Void, Never>?
 
     static let minWindow: TimeInterval = 5
 
@@ -114,7 +115,9 @@ struct SeismicView: View {
         }
         .ignoresSafeArea()
         .contentShape(Rectangle())
-        .simultaneousGesture(tripleLongPress())
+        .onTapGesture(count: 3) {
+            showHistory = true
+        }
         .fullScreenCover(isPresented: $showHistory) {
             HistoryView(isPresented: $showHistory)
         }
@@ -140,22 +143,4 @@ struct SeismicView: View {
             }
     }
 
-    private func tripleLongPress() -> some Gesture {
-        LongPressGesture(minimumDuration: 0.6)
-            .onEnded { _ in
-                longPressCount += 1
-                longPressResetTask?.cancel()
-                if longPressCount >= 3 {
-                    longPressCount = 0
-                    showHistory = true
-                } else {
-                    longPressResetTask = Task {
-                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-                        if !Task.isCancelled {
-                            longPressCount = 0
-                        }
-                    }
-                }
-            }
-    }
 }
