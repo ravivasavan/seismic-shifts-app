@@ -65,4 +65,14 @@ enum DateFormatting {
         f.dateFormat = "HH:mm:ss"
         return f.string(from: date)
     }
+
+    /// Duration formatted `HH:MM:SS` — for the active-window chip on
+    /// the scrubber. Always integer-second granularity.
+    static func durationHMS(seconds: TimeInterval) -> String {
+        let total = max(0, Int(seconds.rounded()))
+        let h = total / 3600
+        let m = (total % 3600) / 60
+        let s = total % 60
+        return String(format: "%02d:%02d:%02d", h, m, s)
+    }
 }

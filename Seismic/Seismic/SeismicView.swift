@@ -31,17 +31,14 @@ struct SeismicView: View {
     @State private var pinchBaseline: TimeInterval? = nil
     @State private var showHistory = false
 
-    static let minWindow: TimeInterval = 5
+    /// Active-window range, integer seconds. Min 15 s (00:00:15),
+    /// max 15 minutes (00:15:00). Pinch zoom snaps to whole seconds
+    /// inside this range — never sub-second.
+    static let minWindow: TimeInterval = 15
+    static let maxWindow: TimeInterval = 15 * 60
     /// The bottom timeline shows only the most recent 5 minutes of
     /// the session, not the whole thing.
     static let stripWindowSeconds: TimeInterval = 5 * 60
-
-    /// Pinch zoom-out is bounded by the session length so far so
-    /// that the maximum window is always the "whole session" view.
-    private var maxWindow: TimeInterval {
-        let elapsed = max(Self.minWindow, Date().timeIntervalSince(session.startedAt))
-        return elapsed
-    }
 
     static let scaleColumnWidth: CGFloat = 40
     static let scaleToTraceGap: CGFloat = 8
@@ -162,7 +159,10 @@ struct SeismicView: View {
                 if pinchBaseline == nil { pinchBaseline = windowSeconds }
                 let base = pinchBaseline ?? windowSeconds
                 let target = base / Double(scale)
-                windowSeconds = max(Self.minWindow, min(maxWindow, target))
+                // Snap to integer seconds so the chip always reads as
+                // a clean HH:MM:SS — never milliseconds.
+                let snapped = target.rounded()
+                windowSeconds = max(Self.minWindow, min(Self.maxWindow, snapped))
             }
             .onEnded { _ in
                 pinchBaseline = nil
