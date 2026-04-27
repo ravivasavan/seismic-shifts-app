@@ -1,6 +1,6 @@
 # Seismic Shifts
 
-![Seismic Shifts running on iPad — a clap captured at 14:01:32 as a brief peak on a near-black trace over cream paper, with a 0–120 dB SPL scale on the left, time markers below, a centisecond timestamp, and a compressed history strip with an orange viewport rectangle along the bottom.](docs/screenshot.png)
+![Seismic Shifts running on iPad — a quiet room captured at around 18 dB SPL with a small peak just after 18:34:36. 0–120 dB SPL scale on the left with horizontal grid lines across the trace area, time markers below, centisecond timestamp on the lower-left, an orange chip showing the active 00:00:15 window on the lower-right, and a compressed history strip with an orange viewport rectangle anchored to the right edge.](docs/screenshot.png)
 
 A native iPadOS app that listens to a gallery space and renders the
 room's acoustic energy as a single, slowly scrolling horizontal trace.
