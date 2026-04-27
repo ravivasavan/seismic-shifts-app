@@ -29,12 +29,20 @@ struct TimeAxisView: View {
         GeometryReader { geo in
             let startTime = endTime.addingTimeInterval(-windowSeconds)
             let interval = tickInterval
-            let firstEpoch = ceil(startTime.timeIntervalSince1970 / interval) * interval
+            // Extend the iterated range one tick interval past each
+            // edge of the visible window. The leftmost tick is then
+            // already off-screen-left when introduced (negative x),
+            // and the next-to-appear tick is already off-screen-right
+            // (x > size.width) — so as time advances they slide in
+            // from the right edge and slide off the left edge rather
+            // than snapping in/out at the screen edges.
+            let firstEpoch = ceil(startTime.timeIntervalSince1970 / interval) * interval - interval
+            let lastEpoch = endTime.timeIntervalSince1970 + interval
 
             ZStack(alignment: .topLeading) {
                 Canvas { context, size in
                     var t = firstEpoch
-                    while t <= endTime.timeIntervalSince1970 {
+                    while t <= lastEpoch {
                         let frac = (t - startTime.timeIntervalSince1970) / windowSeconds
                         let x = size.width * CGFloat(frac)
                         var path = Path()
@@ -46,7 +54,7 @@ struct TimeAxisView: View {
                 }
 
                 ForEach(
-                    Array(stride(from: firstEpoch, through: endTime.timeIntervalSince1970, by: interval)),
+                    Array(stride(from: firstEpoch, through: lastEpoch, by: interval)),
                     id: \.self
                 ) { tickEpoch in
                     let frac = (tickEpoch - startTime.timeIntervalSince1970) / windowSeconds
@@ -54,7 +62,9 @@ struct TimeAxisView: View {
                     Text(label(for: Date(timeIntervalSince1970: tickEpoch)))
                         .font(.system(size: 9, design: .monospaced))
                         .foregroundColor(Theme.inkQuiet)
+                        .fixedSize()
                         .position(x: x, y: 14)
+                        .allowsHitTesting(false)
                 }
             }
         }
