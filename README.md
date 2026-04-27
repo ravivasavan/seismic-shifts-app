@@ -126,7 +126,7 @@ collection, zero tracking, zero required-reason API usage.
 - Encryption-compliance flag (`ITSAppUsesNonExemptEncryption = NO`)
 - Microphone usage description set
 - Display name: **Seismic Shifts**
-- Bundle ID: `me.ravivasavan.Seismic`
+- Bundle ID: `me.ravivasavan.SeismicShifts`
 
 ## License
 
