@@ -10,6 +10,11 @@ import Combine
 /// - **Three consecutive long-presses** within ~2 seconds reveals
 ///   the History view (an artist-only archive of past sessions).
 ///   Three more long-presses inside the History view dismiss it.
+///
+/// Re-rendered at display refresh via `TimelineView(.animation)`,
+/// which fires per vsync — 120 Hz on ProMotion iPad. Combined with
+/// the 10 Hz visual sample rate from `SessionStore`, the trace
+/// scrolls smoothly rather than stepping once per second.
 struct SeismicView: View {
     @StateObject private var session: SessionStore
     @StateObject private var audio: AudioMonitor
@@ -37,13 +42,12 @@ struct SeismicView: View {
             Theme.paper.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                HStack(spacing: 0) {
+                HStack(spacing: Theme.unit / 3) {
                     ScaleView()
                         .frame(width: 56)
-                        .padding(.leading, 16)
 
-                    VStack(spacing: 0) {
-                        TimelineView(.periodic(from: .now, by: 0.5)) { context in
+                    VStack(spacing: 8) {
+                        TimelineView(.animation) { context in
                             ActiveTraceView(
                                 samples: session.samples,
                                 windowSeconds: windowSeconds,
@@ -54,28 +58,25 @@ struct SeismicView: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                        TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                        TimelineView(.animation) { context in
                             TimeAxisView(
                                 windowSeconds: windowSeconds,
                                 endTime: context.date
                             )
                         }
-                        .padding(.top, 6)
                     }
-                    .padding(.trailing, 16)
                 }
-                .frame(maxHeight: .infinity)
+                .padding(.vertical, Theme.unit / 2)
 
                 HStack {
                     TimestampView()
                     Spacer()
                 }
-                .padding(.horizontal, 32)
-                .padding(.vertical, 8)
+                .padding(.bottom, Theme.unit / 5)
 
                 Rectangle().fill(Theme.hairline).frame(height: 0.5)
 
-                TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                TimelineView(.animation) { context in
                     HistoryStripView(
                         samples: session.samples,
                         sessionStartedAt: session.startedAt,
@@ -83,10 +84,10 @@ struct SeismicView: View {
                         viewportWindowSeconds: windowSeconds
                     )
                 }
-                .frame(height: 110)
-                .padding(.horizontal, 32)
-                .padding(.vertical, 12)
+                .frame(height: 96)
+                .padding(.vertical, Theme.unit / 4)
             }
+            .padding(Theme.unit)
         }
         .contentShape(Rectangle())
         .simultaneousGesture(tripleLongPress())

@@ -2,7 +2,9 @@ import SwiftUI
 
 /// The main scrolling trace. Renders the slice of `samples` that
 /// falls inside the current `windowSeconds` ending at `endTime`.
-/// `samples` are dB SPL values at 1 Hz starting at `sessionStartedAt`.
+/// `samples` are dB SPL at `SessionStore.sampleRate` Hz, with index 0
+/// at `sessionStartedAt`. Re-rendered at display refresh by the
+/// enclosing `TimelineView(.animation)`.
 struct ActiveTraceView: View {
     let samples: [Float]
     let windowSeconds: TimeInterval
@@ -12,17 +14,18 @@ struct ActiveTraceView: View {
     var body: some View {
         Canvas { context, size in
             guard samples.count > 1 else { return }
+            let rate = SessionStore.sampleRate
 
             let secondsFromStart = endTime.timeIntervalSince(sessionStartedAt)
             let windowStart = secondsFromStart - windowSeconds
 
-            let startIdx = max(0, Int(windowStart.rounded(.down)))
-            let endIdx = min(samples.count, Int(secondsFromStart.rounded(.up)) + 1)
+            let startIdx = max(0, Int((windowStart * rate).rounded(.down)))
+            let endIdx = min(samples.count, Int((secondsFromStart * rate).rounded(.up)) + 1)
             guard startIdx < endIdx else { return }
 
             var path = Path()
             for i in startIdx..<endIdx {
-                let secondsFromWindowStart = Double(i) - windowStart
+                let secondsFromWindowStart = Double(i) / rate - windowStart
                 let frac = secondsFromWindowStart / windowSeconds
                 let x = size.width * CGFloat(frac)
                 let normalized = max(0, min(1, samples[i] / 120))

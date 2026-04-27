@@ -1,6 +1,11 @@
 import SwiftUI
 
 enum Theme {
+    /// Single layout unit used for outer margins, gutters, and section
+    /// spacing. Keep everything visible on screen as multiples or
+    /// fractions of this so the page reads as one consistent grid.
+    static let unit: CGFloat = 40
+
     static let paper = Color(red: 0.957, green: 0.937, blue: 0.902)
     static let ink = Color(red: 0.102, green: 0.102, blue: 0.102)
     static let inkQuiet = Color.black.opacity(0.55)

@@ -162,30 +162,28 @@ struct SessionRow: View {
                     .foregroundColor(Theme.inkFaint)
             }
             Canvas { context, size in
-                guard !session.samples.isEmpty else { return }
+                let n = session.samples.count
+                guard n > 1 else { return }
                 let centerY = size.height / 2
                 let amp = size.height * 0.4
-                let bucketCount = max(1, Int(size.width))
-                let perBucket = max(1, session.samples.count / bucketCount)
+                let columns = min(n, max(2, Int(size.width)))
 
                 var path = Path()
-                var first = true
-                var col = 0
-                while col * perBucket < session.samples.count && col < bucketCount {
-                    let s = col * perBucket
-                    let e = min(s + perBucket, session.samples.count)
+                for col in 0..<columns {
+                    let s = (col * n) / columns
+                    let endRaw = ((col + 1) * n) / columns
+                    let e = max(s + 1, min(n, endRaw))
                     let slice = session.samples[s..<e]
                     let avg = slice.reduce(0, +) / Float(slice.count)
-                    let n = max(0, min(1, avg / 120))
-                    let x = CGFloat(col) * (size.width / CGFloat(bucketCount))
-                    let y = centerY - CGFloat(n) * amp
-                    if first {
+                    let nval = max(0, min(1, avg / 120))
+                    let xFrac = columns > 1 ? Double(col) / Double(columns - 1) : 0.5
+                    let x = size.width * CGFloat(xFrac)
+                    let y = centerY - CGFloat(nval) * amp
+                    if col == 0 {
                         path.move(to: CGPoint(x: x, y: y))
-                        first = false
                     } else {
                         path.addLine(to: CGPoint(x: x, y: y))
                     }
-                    col += 1
                 }
                 context.stroke(path, with: .color(Theme.ink), lineWidth: 0.7)
             }
