@@ -32,6 +32,9 @@ struct SeismicView: View {
     @State private var showHistory = false
 
     static let minWindow: TimeInterval = 5
+    /// The bottom timeline shows only the most recent 5 minutes of
+    /// the session, not the whole thing.
+    static let stripWindowSeconds: TimeInterval = 5 * 60
 
     /// Pinch zoom-out is bounded by the session length so far so
     /// that the maximum window is always the "whole session" view.
@@ -107,9 +110,11 @@ struct SeismicView: View {
                 TimelineView(.animation) { context in
                     HistoryStripView(
                         samples: session.samples,
+                        sampleRate: SessionStore.sampleRate,
                         sessionStartedAt: session.startedAt,
                         viewportEndTime: context.date,
-                        viewportWindowSeconds: windowSeconds
+                        viewportWindowSeconds: windowSeconds,
+                        stripWindowSeconds: Self.stripWindowSeconds
                     )
                 }
                 .frame(height: 96)

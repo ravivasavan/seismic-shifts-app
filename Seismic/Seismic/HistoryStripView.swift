@@ -1,35 +1,48 @@
 import SwiftUI
 
-/// The full-session compressed strip at the bottom of the screen,
-/// with an orange viewport rectangle marking the active window.
+/// The compressed timeline strip at the bottom of the screen, showing
+/// the **latest `stripWindowSeconds` of the session** rather than the
+/// whole thing. Default 5 minutes. The orange viewport rectangle marks
+/// where the active trace's window sits within those 5 minutes.
 ///
-/// The data line always spans the full strip width: each pixel
-/// column maps to a proportional slice of the entire sample array,
-/// regardless of whether the session is shorter or longer than the
-/// strip's pixel count. The viewport rectangle's right edge is
-/// always "now" (= the right edge of the strip), so the line and
-/// the viewport's right edge always meet there.
+/// Behaviour:
+/// - If the session is shorter than `stripWindowSeconds`, the strip
+///   shows session start → now and the viewport scales to its
+///   relative size in that span.
+/// - Once the session passes `stripWindowSeconds`, the strip's
+///   leftmost edge tracks `(now − stripWindowSeconds)` and content
+///   scrolls leftward as time advances.
 struct HistoryStripView: View {
     let samples: [Float]
+    let sampleRate: Double
     let sessionStartedAt: Date
     let viewportEndTime: Date
     let viewportWindowSeconds: TimeInterval
+    let stripWindowSeconds: TimeInterval
 
     var body: some View {
         Canvas { context, size in
             let centerY = size.height / 2
             let amp = size.height * 0.4
 
-            let n = samples.count
-            if n > 1 {
-                let columns = min(n, max(2, Int(size.width)))
+            let elapsed = viewportEndTime.timeIntervalSince(sessionStartedAt)
+            guard elapsed > 0 else { return }
+            let stripDuration = min(stripWindowSeconds, elapsed)
+            let stripStart = elapsed - stripDuration
+
+            let startIdx = max(0, Int((stripStart * sampleRate).rounded(.down)))
+            let endIdx = min(samples.count, Int((elapsed * sampleRate).rounded(.up)) + 1)
+            let visibleCount = endIdx - startIdx
+
+            if visibleCount > 1 {
+                let columns = min(visibleCount, max(2, Int(size.width)))
                 var points: [CGPoint] = []
                 points.reserveCapacity(columns)
                 for col in 0..<columns {
-                    let s = (col * n) / columns
-                    let endRaw = ((col + 1) * n) / columns
-                    let e = max(s + 1, min(n, endRaw))
-                    let slice = samples[s..<e]
+                    let s = (col * visibleCount) / columns
+                    let endRaw = ((col + 1) * visibleCount) / columns
+                    let e = max(s + 1, min(visibleCount, endRaw))
+                    let slice = samples[(startIdx + s)..<(startIdx + e)]
                     let avg = slice.reduce(0, +) / Float(slice.count)
                     let normalized = max(0, min(1, avg / 120))
 
@@ -46,12 +59,8 @@ struct HistoryStripView: View {
             }
 
             // Viewport rectangle. Right edge anchors at "now"; width
-            // shrinks the longer the session runs vs. the active
-            // window. Clamped to full width when the session is
-            // shorter than one window.
-            let totalSeconds = viewportEndTime.timeIntervalSince(sessionStartedAt)
-            guard totalSeconds > 0 else { return }
-            let viewportFraction = min(1.0, viewportWindowSeconds / totalSeconds)
+            // is the active window's share of the strip duration.
+            let viewportFraction = min(1.0, viewportWindowSeconds / stripDuration)
             let viewportEndFraction = 1.0
             let viewportStartFraction = max(0.0, viewportEndFraction - viewportFraction)
 
