@@ -14,7 +14,7 @@ struct SeismicApp: App {
                         .transition(.opacity)
                 } else {
                     LaunchView {
-                        withAnimation(.easeOut(duration: 0.45)) {
+                         withAnimation(.easeOut(duration: 0.45)) {
                             launchComplete = true
                         }
                     }

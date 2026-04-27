@@ -96,13 +96,19 @@ struct SeismicView: View {
                 }
                 .padding(.top, 6)
 
-                // 3. Live timestamp — inset 40 pt from screen left
-                //    so its first character ("2" of "20260427")
-                //    lines up with the dB labels.
-                TimestampView()
-                    .padding(.leading, Theme.unit)
-                    .padding(.top, Theme.unit / 2)
-                    .padding(.bottom, Theme.unit / 5)
+                // 3. Live timestamp + active-window chip on the same
+                //    row. Timestamp pinned left at 40 pt; chip pinned
+                //    to the trailing edge of the inner frame, also
+                //    40 pt from the screen right thanks to the outer
+                //    container's trailing padding.
+                HStack(alignment: .center, spacing: 0) {
+                    TimestampView()
+                    Spacer()
+                    WindowChip(seconds: windowSeconds)
+                }
+                .padding(.leading, Theme.unit)
+                .padding(.top, Theme.unit / 2)
+                .padding(.bottom, Theme.unit / 5)
 
                 // 4. Hairline — leading inset 40 pt; trailing 40 pt
                 //    comes from the outer container, so no extra
