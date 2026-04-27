@@ -76,16 +76,16 @@ struct SeismicView: View {
 
                 // 2. Time axis — sits below the trace, so all tick
                 //    labels are below the 0 dB baseline rather than
-                //    overlapping it.
-                HStack(alignment: .top, spacing: Self.scaleToTraceGap) {
-                    Color.clear.frame(width: Self.scaleColumnWidth)
-                    TimelineView(.animation) { context in
-                        TimeAxisView(
-                            windowSeconds: windowSeconds,
-                            endTime: context.date
-                        )
-                    }
+                //    overlapping it. Indented via .padding rather
+                //    than a spacer column so it doesn't grab flex
+                //    height in the parent VStack.
+                TimelineView(.animation) { context in
+                    TimeAxisView(
+                        windowSeconds: windowSeconds,
+                        endTime: context.date
+                    )
                 }
+                .padding(.leading, Self.scaleColumnWidth + Self.scaleToTraceGap)
                 .padding(.top, 6)
 
                 // 3. Live timestamp — left edge aligned to the y-axis
