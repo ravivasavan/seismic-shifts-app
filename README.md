@@ -1,9 +1,10 @@
 # Seismic Shifts
 
-![Seismic Shifts running on iPad — a quiet room captured at around 18 dB SPL with a small peak just after 18:34:36. 0–120 dB SPL scale on the left with horizontal grid lines across the trace area, time markers below, centisecond timestamp on the lower-left, an orange chip showing the active 00:00:15 window on the lower-right, and a compressed history strip with an orange viewport rectangle anchored to the right edge.](docs/screenshot.png)
+![Seismic Shifts — a quiet room captured at around 18 dB SPL with a small peak just after 18:34:36. 0–120 dB SPL scale on the left with horizontal grid lines across the trace area, time markers below, centisecond timestamp on the lower-left, an orange chip showing the active 00:00:15 window on the lower-right, and a compressed history strip with an orange viewport rectangle anchored to the right edge.](docs/screenshot.png)
 
-A native iPadOS app that listens to a gallery space and renders the
-room's acoustic energy as a single, slowly scrolling horizontal trace.
+A digital and interactive work that listens to the gallery space —
+the room it is in and its surrounds — and renders that acoustic
+energy as a single, slowly scrolling horizontal trace.
 
 The work is for both Deaf and hearing audiences. Its claim is that
 what is recorded is real — a room has presence, with or without
@@ -40,8 +41,8 @@ TestFlight (and eventually the App Store as a free download).
 ### What's on screen
 
 - **Active trace.** A 15-minute window of dB SPL values, scrolling
-  left at ~3 px/s on a 12.9-inch iPad. Pinch to zoom between 1 and
-  60 minutes (no UI affordance — silent gesture).
+  left at ~3 px/s on a typical landscape display. Pinch to zoom
+  between 1 and 60 minutes (no UI affordance — silent gesture).
 - **Y-axis scale.** 0–120 dB SPL with major ticks every 20 dB and
   minor ticks every 5 dB. Sits in the left gutter.
 - **X-axis time markers.** Tick spacing adapts to the active
