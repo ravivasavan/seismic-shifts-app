@@ -157,6 +157,11 @@ argument of the work.
   (Trevor Johnston and others).
 - **1988** — Deaf President Now protests at Gallaudet University
   install I. King Jordan as first deaf president.
+- **1990** — Americans with Disabilities Act (ADA) signed into US
+  law. Mandates access — interpreting services, captioning,
+  telecommunications relay — and prohibits discrimination on the
+  basis of disability. A landmark uptick for Deaf life beyond
+  language recognition alone.
 - **1995** — Auslan recognised in Australia's national language
   policy.
 - **2003** — New Zealand Sign Language recognised as an official
@@ -164,6 +169,8 @@ argument of the work.
 - **2010** — International Congress on Education of the Deaf issues
   *Statement of Principle and Accord for the Future*, formally
   rejecting and apologising for the 1880 Milan resolutions.
+- **2022** — UK Parliament passes the British Sign Language Act,
+  recognising BSL as a language of England, Wales and Scotland.
 - **2020s** — Ongoing recognition and documentation of Aboriginal
   sign language traditions in linguistic and cultural scholarship;
   continuing work on Yolngu, Warlpiri and other Aboriginal sign
