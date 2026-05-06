@@ -8,8 +8,8 @@ energy as a single, slowly scrolling horizontal trace.
 
 The work is for both Deaf and hearing audiences. Its claim is that
 what is recorded is real — a room has presence, with or without
-anyone to hear it. One mic, one line, one slow scroll. Cream paper,
-near-black ink. No interaction, no settings, no modes.
+anyone to hear, see, or feel it. One mic, one line, one slow scroll.
+Cream paper, near-black ink. No interaction, no settings, no modes.
 
 **Critical distinction:** only the visualisation data — one float per
 second representing acoustic energy — is recorded. **No audio is

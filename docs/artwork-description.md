@@ -30,8 +30,8 @@ of Aboriginal sign languages, including Warlpiri and Yolngu,
 pockmarked by the seismic moments that have shaped and unmade Deaf
 life and signed languages.
 
-A room has presence, with or without anyone to hear or see it. A
-language has presence, with or without an institution willing to
+A room has presence, with or without anyone to hear, see, or feel it.
+A language has presence, with or without an institution willing to
 recognise it.
 
 For both Deaf and hearing audiences.
@@ -60,7 +60,7 @@ that arc, Deaf existence and signed languages plummet below the
 historical baseline and have not, even now, recovered.
 
 The claim is that what is recorded is real: a room has presence, with
-or without anyone to hear or see it; a language has presence, with or
+or without anyone to hear, see, or feel it; a language has presence, with or
 without an institution willing to recognise it. The piece is for both
 Deaf and hearing audiences.
 
