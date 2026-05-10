@@ -38,7 +38,11 @@ struct ActiveTraceView: View {
                 var grid = Path()
                 grid.move(to: CGPoint(x: gridStartX, y: y))
                 grid.addLine(to: CGPoint(x: size.width, y: y))
-                context.stroke(grid, with: .color(Theme.inkFaint), lineWidth: 0.5)
+                context.stroke(
+                    grid,
+                    with: .color(Theme.penFaint),
+                    style: StrokeStyle(lineWidth: 0.5, dash: [2, 2])
+                )
             }
 
             guard samples.count > 1 else { return }

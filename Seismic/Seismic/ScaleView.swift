@@ -21,7 +21,7 @@ struct ScaleView: View {
                         var path = Path()
                         path.move(to: CGPoint(x: size.width - 8, y: y))
                         path.addLine(to: CGPoint(x: size.width, y: y))
-                        context.stroke(path, with: .color(Theme.inkFaint), lineWidth: 0.5)
+                        context.stroke(path, with: .color(Theme.penFaint), lineWidth: 0.5)
                         v += majorStep
                     }
 
@@ -32,7 +32,7 @@ struct ScaleView: View {
                             var path = Path()
                             path.move(to: CGPoint(x: size.width - 4, y: y))
                             path.addLine(to: CGPoint(x: size.width, y: y))
-                            context.stroke(path, with: .color(Theme.inkFaint), lineWidth: 0.5)
+                            context.stroke(path, with: .color(Theme.penFaint), lineWidth: 0.5)
                         }
                         m += 5
                     }
@@ -41,7 +41,7 @@ struct ScaleView: View {
                 ForEach(Array(stride(from: minDb, through: maxDb, by: majorStep)), id: \.self) { value in
                     Text("\(Int(value))")
                         .font(.system(size: 10, design: .monospaced))
-                        .foregroundColor(Theme.inkQuiet)
+                        .foregroundColor(Theme.penQuiet)
                         .frame(width: 28, alignment: .leading)
                         .position(
                             x: 14,

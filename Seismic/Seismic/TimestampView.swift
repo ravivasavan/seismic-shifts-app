@@ -8,7 +8,7 @@ struct TimestampView: View {
         TimelineView(.animation(minimumInterval: 0.01)) { context in
             Text(DateFormatting.instrumentTimestamp(date: context.date))
                 .font(.system(size: 14, design: .monospaced))
-                .foregroundColor(Theme.ink)
+                .foregroundColor(Theme.pen)
                 .monospacedDigit()
                 .tracking(1)
         }

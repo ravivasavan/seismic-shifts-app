@@ -48,7 +48,7 @@ struct TimeAxisView: View {
                         var path = Path()
                         path.move(to: CGPoint(x: x, y: 0))
                         path.addLine(to: CGPoint(x: x, y: 4))
-                        context.stroke(path, with: .color(Theme.inkFaint), lineWidth: 0.5)
+                        context.stroke(path, with: .color(Theme.penFaint), lineWidth: 0.5)
                         t += interval
                     }
                 }
@@ -61,7 +61,7 @@ struct TimeAxisView: View {
                     let x = geo.size.width * CGFloat(frac)
                     Text(label(for: Date(timeIntervalSince1970: tickEpoch)))
                         .font(.system(size: 9, design: .monospaced))
-                        .foregroundColor(Theme.inkQuiet)
+                        .foregroundColor(Theme.penQuiet)
                         .fixedSize()
                         .position(x: x, y: 14)
                         .allowsHitTesting(false)

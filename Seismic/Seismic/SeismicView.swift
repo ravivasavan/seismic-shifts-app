@@ -115,7 +115,7 @@ struct SeismicView: View {
                 //    horizontal padding is needed here (otherwise it
                 //    would double up to 80 pt on the right).
                 Rectangle()
-                    .fill(Theme.hairline)
+                    .fill(Theme.penFaint)
                     .frame(height: 0.5)
                     .padding(.leading, Theme.unit)
 
