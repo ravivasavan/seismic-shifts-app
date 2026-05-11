@@ -1,6 +1,6 @@
 # Seismic Shifts
 
-![Seismic Shifts — a quiet room captured at around 18 dB SPL with a small peak just after 18:34:36. 0–120 dB SPL scale on the left with horizontal grid lines across the trace area, time markers below, centisecond timestamp on the lower-left, an orange chip showing the active 00:00:15 window on the lower-right, and a compressed history strip with an orange viewport rectangle anchored to the right edge.](docs/screenshot.png)
+![Seismic Shifts — a room captured at a baseline of around 20 dB SPL with several peaks rising to roughly 50 dB across the 15-second window ending 09:02:43:88. 0–120 dB SPL scale on the left in red, with dashed red grid lines across the trace area, red time markers below, red centisecond timestamp on the lower-left, an orange chip showing the active 00:00:15 window on the lower-right, and a compressed history strip with a black mini-trace and an orange viewport rectangle anchored to the right edge.](docs/screenshot.png)
 
 A digital and interactive work that listens to the gallery space —
 the room it is in and its surrounds — and renders that acoustic
@@ -9,7 +9,8 @@ energy as a single, slowly scrolling horizontal trace.
 The work is for both Deaf and hearing audiences. Its claim is that
 what is recorded is real — a room has presence, with or without
 anyone to hear, see, or feel it. One mic, one line, one slow scroll.
-Cream paper, near-black ink. No interaction, no settings, no modes.
+Warm cream paper, red ink instrument marks, a black needle trace. No
+interaction, no settings, no modes.
 
 **Critical distinction:** only the visualisation data — one float per
 second representing acoustic energy — is recorded. **No audio is

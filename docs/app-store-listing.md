@@ -20,7 +20,7 @@ A seismograph for rooms
 ## Promotional Text (170 char limit, editable without resubmission)
 
 ```
-Listens to the room around you and draws its acoustic energy as a single, slowly scrolling line. Cream paper, near-black ink. For Deaf and hearing audiences.
+Listens to the room around you and draws its acoustic energy as a single, slowly scrolling line. Warm cream paper, red ink, black trace. For Deaf and hearing audiences.
 ```
 
 ## Description (4000 char limit)
@@ -32,7 +32,7 @@ A native iPad app that listens to the room around it and renders the room's acou
 
 The work is for both Deaf and hearing audiences. Its claim is that what is recorded is real — a room has presence, with or without anyone to hear it. The trace fills the screen over the course of an afternoon and disappears off the left edge. There is no interaction. There are no settings. One mic, one line, one slow scroll.
 
-Cream paper. Near-black ink. Quiet typography. The piece reads as instrument output rather than as audio visualisation — closer to a seismograph than to an equaliser.
+Warm cream paper, red-ink instrument marks, a black needle trace. Quiet typography. The piece reads as instrument output rather than as audio visualisation — closer to a seismograph than to an equaliser.
 
 WHAT IT MEASURES
 

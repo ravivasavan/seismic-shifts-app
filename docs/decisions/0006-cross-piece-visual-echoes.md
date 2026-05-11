@@ -1,6 +1,6 @@
 # ADR-0006: Cross-piece visual echoes
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0012](./0012-pen-red-instrument-black-trace.md)
 - **Date:** 2026-05-06
 
 ## Context

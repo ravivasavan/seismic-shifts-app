@@ -191,7 +191,8 @@ The trace is rising. It is not yet at the line it left.
 ## Notes on the diptych
 
 - **Scale.** The digital trace covers minutes to days; the drawing
-  covers tens of thousands of years. The cream/ink palette is shared.
+  covers tens of thousands of years. The warm-cream paper, red
+  instrument marks, and black trace are shared across the two pieces.
 - **The orange chip.** In the digital piece, a quiet orange marks the
   active 15-minute window. On the drawing, the same orange bands the
   eugenics era — 1880 to 1945. Same visual language, different time

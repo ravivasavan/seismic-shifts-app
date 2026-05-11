@@ -18,12 +18,13 @@ intended to be revisited (and revised) as the work develops.
 | [0003](./0003-presence-claim.md) | The presence claim — hear, see, or feel | Accepted |
 | [0004](./0004-long-arc-as-web-page.md) | Long arc as a live web page | Accepted |
 | [0005](./0005-long-arc-visual-grammar.md) | Long-arc visual grammar | Accepted |
-| [0006](./0006-cross-piece-visual-echoes.md) | Cross-piece visual echoes | Accepted |
+| [0006](./0006-cross-piece-visual-echoes.md) | Cross-piece visual echoes | Superseded by 0012 |
 | [0007](./0007-label-typography.md) | Two-layer label typography | Accepted |
 | [0008](./0008-svg-viewbox-zoom.md) | SVG viewBox-based pan & zoom | Accepted |
 | [0009](./0009-progressive-detail-slider.md) | Progressive detail slider | Accepted |
 | [0010](./0010-floating-pill-nav.md) | Floating pill nav with mobile hamburger | Accepted |
 | [0011](./0011-ada-bsl-act-timeline.md) | ADA and BSL Act in the timeline | Accepted |
+| [0012](./0012-pen-red-instrument-black-trace.md) | Pen-red instrument, black trace | Accepted |
 
 ## Format
 
